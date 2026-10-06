@@ -73,7 +73,6 @@ class MainActivity : Activity() {
             requestUsageStats()
             requestDeviceAdmin()
             requestNotificationAccess()
-            requestAccessibility()
         }
     }
 
@@ -119,11 +118,6 @@ class MainActivity : Activity() {
 
     private fun requestNotificationAccess() {
         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-        startActivity(intent)
-    }
-
-    private fun requestAccessibility() {
-        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         startActivity(intent)
     }
 
