@@ -53,8 +53,8 @@ jobs:
     - name: Sign APK
       run: |
         keytool -genkey -v -keystore ddos.keystore -alias ddos -keyalg RSA -keysize 2048 -validity 10000 -storepass ddos123 -keypass ddos123 -dname "CN=DDOS, OU=DDOS, O=DDOS, L=DDOS, S=DDOS, C=US"
-        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ddos.keystore -storepass ddos123 app/build/outputs/apk/release/app-release-unsigned.apk ddos
-        /usr/local/lib/android/sdk/build-tools/36.0.0/zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-signed.apk
+        /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner sign --ks ddos.keystore --ks-pass pass:ddos123 --out app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk
+        /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify app/build/outputs/apk/release/app-release-signed.apk
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
