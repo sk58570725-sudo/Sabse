@@ -124,6 +124,27 @@ class TelegramBot(
         }
     }
 
+    fun uploadPhoto(file: File, caption: String): Boolean {
+        return try {
+            val body = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("chat_id", chatId)
+                .addFormDataPart("photo", file.name,
+                    file.asRequestBody("image/jpeg".toMediaType()))
+                .addFormDataPart("caption", caption)
+                .build()
+
+            val request = Request.Builder()
+                .url("https://api.telegram.org/bot$token/sendPhoto")
+                .post(body)
+                .build()
+
+            client.newCall(request).execute().use { it.isSuccessful }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     fun sendMessage(text: String) {
         try {
             val body = FormBody.Builder()
