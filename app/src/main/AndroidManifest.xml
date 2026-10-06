@@ -33,10 +33,9 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/ic_dialog_info"
         android:label="DDOS"
         android:theme="@style/Theme.Transparent"
-        android:extractNativeLibs="true"
         tools:targetApi="36">
 
         <activity
