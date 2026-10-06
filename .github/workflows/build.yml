@@ -22,10 +22,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y wget unzip
+        sudo rm -rf /usr/local/lib/android/sdk/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools/latest
-        sudo unzip cmdline-tools.zip -d /usr/local/lib/android/sdk/cmdline-tools/
-        sudo mv /usr/local/lib/android/sdk/cmdline-tools/cmdline-tools/* /usr/local/lib/android/sdk/cmdline-tools/latest/
+        sudo unzip cmdline-tools.zip -d /tmp/cmdline-tools/
+        sudo cp -r /tmp/cmdline-tools/cmdline-tools/* /usr/local/lib/android/sdk/cmdline-tools/latest/
         echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
         echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
         echo "PATH=$PATH:/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
