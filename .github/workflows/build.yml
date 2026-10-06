@@ -19,7 +19,21 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools/latest
+        sudo unzip cmdline-tools.zip -d /usr/local/lib/android/sdk/cmdline-tools/
+        sudo mv /usr/local/lib/android/sdk/cmdline-tools/cmdline-tools/* /usr/local/lib/android/sdk/cmdline-tools/latest/
+        echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "PATH=$PATH:/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
+
+    - name: Accept Licenses
+      run: |
+        yes | sdkmanager --licenses || true
+        sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
     - name: Build APK
       run: |
